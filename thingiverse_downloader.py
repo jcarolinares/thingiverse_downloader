@@ -1,13 +1,20 @@
 from pyquery import PyQuery as pq #actualmente solo consigo que funcione en python 2 sin embargo deberia poder ser compatible con python3
 from lxml import etree
+import os
 import urllib
+import urllib2
+import time
+import subprocess
 import re
 
-user="jcarolinares"
+
+
+user=""
 user_statics={"followers":0,"following":0,"designs":0,"collections":0,"makes":0,"likes":0}
 
 
-print("Bienvenido\n")
+print("THINGIVERSE DOWNLOADER\n")
+user=raw_input("ENTER A THINGIVERSE USERNAME\n")
 
 #Acceso al html
 #d = pq("<html></html>")
@@ -76,6 +83,7 @@ print n_likes_pages
 
 objects_list=[]
 
+
 for page in range(n_likes_pages):
 
 	url_name="http://www.thingiverse.com/"+user+"/likes/page:"+str(page+1)
@@ -122,13 +130,57 @@ for x in objects_list:
 #downloads_links=downloads_links.text()
 #downloads_links=downloads_links.split("**")
 
-print("LINKS DE DESCARGA")
-#print downloads_links
+print("DOWNLOADING FILES")
+subprocess.call('mkdir '+user,shell=True)
+#print and download downloads_links
+i=0
 for x in downloads_links:
 	print(x)
+	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
+	i=i+1
 
+#subprocess.call('wget -O '+'./jcarolinares/prueba_wget.zip ' +'"http://www.thingiverse.com/thing:15276/zip"' ,shell=True)
+#subprocess.call('echo pru.txt',shell=True)
+'''
+#Puede que se encuentre con archivos no descargables que den error, usar excepciones para continnuar el for
+archivoDescargar = "http://www.thingiverse.com/thing:15276/zip"
+archivoGuardar = "descarga.zip"
+
+now = time.time()
+
+descarga = urllib2.urlopen(archivoDescargar)
+
+ficheroGuardar=file(archivoGuardar,"w")
+ficheroGuardar.write(descarga.read())
+ficheroGuardar.close()
+
+elapsed = time.time() - now
+
+print "Descargado el archivo: %s en %0.3fs" % (archivoDescargar,elapsed)
+
+'''
 
 '''
 <a href="/thing:1375883/zip" class="thing-download-btn thing-option-btn track" data-track-category="[&quot;thing&quot;, &quot;thing&quot;]" data-track-action="[&quot;download&quot;, &quot;download_logged_in&quot;]" data-track-label="[&quot;zip&quot;, &quot;zip&quot;]">Download This Thing!</a>
 
+'''
+
+'''
+import urllib2
+import time
+
+archivoDescargar = "http://www.lawebdelprogramador.com/logolwp100x25.jpg"
+archivoGuardar = "logoLWP.jpg"
+
+now = time.time()
+
+descarga = urllib2.urlopen(archivoDescargar)
+
+ficheroGuardar=file(archivoGuardar,"w")
+ficheroGuardar.write(descarga.read())
+ficheroGuardar.close()
+
+elapsed = time.time() - now
+
+print "Descargado el archivo: %s en %0.3fs" % (archivoDescargar,elapsed)
 '''
