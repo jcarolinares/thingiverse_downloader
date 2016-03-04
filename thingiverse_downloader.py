@@ -84,6 +84,7 @@ else:
 
 #print n_likes_pages
 
+objects_names=[]
 objects_list=[]
 
 
@@ -99,15 +100,38 @@ for page in range(n_likes_pages):
 	#Selection of object info
 	date_data=d('div[data-type="Thing"]')
 	date_data=date_data.append(" **")
+
 	event_link=date_data #We use event_link to take the object html links
+	title_object=date_data
+
 	date_data=date_data.text()
 	date_data=date_data.split("**")
+
+	title_object=str(title_object)
+	title_object=title_object.split("**")
 
 	event_link=str(event_link)
 	event_link=event_link.split("**")
 
+	object_names=[]
 	for x in date_data:
 		print x
+
+	#Taking the Objects titles
+	for x in range(len(title_object)):
+
+		aux_title_object=re.search('title="(.+?)">',title_object[x])
+
+		if aux_title_object:
+			title_object[x]= aux_title_object.group(1)
+			title_object[x]=title_object[x].replace(" ","_") #Putting away namespaces
+			title_object[x]=title_object[x].replace("/","_") #Putting away /
+			title_object[x]=title_object[x].replace(";","") #Putting away /
+			objects_names.append(title_object[x])
+			#print title_object[x]
+
+
+
 
 	#Taking the Objects ID and rebuilding the URL
 	for x in range(len(event_link)):
@@ -136,7 +160,8 @@ for x in objects_list:
 #downloads_links=downloads_links.text()
 #downloads_links=downloads_links.split("**")
 
-
+for x in objects_names:
+	print x
 
 
 print("DOWNLOADING FILES")
@@ -145,7 +170,8 @@ subprocess.call('mkdir '+user,shell=True)
 i=0
 for x in downloads_links:
 	print(x)
-	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
+#	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
+	subprocess.call('wget -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
 	i=i+1
 
 #subprocess.call('wget -O '+'./jcarolinares/prueba_wget.zip ' +'"http://www.thingiverse.com/thing:15276/zip"' ,shell=True)
