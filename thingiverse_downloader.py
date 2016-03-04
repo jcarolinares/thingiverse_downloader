@@ -20,7 +20,7 @@ user=raw_input("ENTER A THINGIVERSE USERNAME\n")
 #d = pq("<html></html>")
 #d = pq(etree.fromstring("<html></html>"))
 #d = pq(url='https://es.wikipedia.org/wiki/Legan%C3%A9s')
-d = pq(url='http://www.thingiverse.com/jcarolinares/likes/page:1')
+d = pq(url='http://www.thingiverse.com/'+user+'/likes/page:1')
 #d = pq(url='http://www.thingiverse.com/will_CORP/likes/page:1')
 #d = pq(url='http://google.com/', opener=lambda url, **kw: urllib.urlopen(url).read())
 #d = pq(filename='table.html')
@@ -72,14 +72,17 @@ if data_user_statics[5]=="1K":
 else:
 	user_statics["likes"]=int(data_user_statics[5])
 
-#print user_statics
+print user_statics
 
 #Calculates the numbers of likes pages
 if user_statics["likes"]%12 ==0:
 	n_likes_pages=user_statics["likes"]/12
 else:
+	n_likes_pages=0
+	print (n_likes_pages)
 	n_likes_pages=(user_statics["likes"]/12)+1
-print n_likes_pages
+
+#print n_likes_pages
 
 objects_list=[]
 
@@ -102,6 +105,9 @@ for page in range(n_likes_pages):
 
 	event_link=str(event_link)
 	event_link=event_link.split("**")
+
+	for x in date_data:
+		print x
 
 	#Taking the Objects ID and rebuilding the URL
 	for x in range(len(event_link)):
@@ -129,6 +135,9 @@ for x in objects_list:
 #downloads_links=downloads_links.append(" **")
 #downloads_links=downloads_links.text()
 #downloads_links=downloads_links.split("**")
+
+
+
 
 print("DOWNLOADING FILES")
 subprocess.call('mkdir '+user,shell=True)
