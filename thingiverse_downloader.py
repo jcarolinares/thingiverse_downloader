@@ -126,7 +126,11 @@ for page in range(n_likes_pages):
 			title_object[x]= aux_title_object.group(1)
 			title_object[x]=title_object[x].replace(" ","_") #Putting away namespaces
 			title_object[x]=title_object[x].replace("/","_") #Putting away /
-			title_object[x]=title_object[x].replace(";","") #Putting away /
+			title_object[x]=title_object[x].replace(";","") #Putting away ;
+			title_object[x]=title_object[x].replace(".","-") #Putting away not extensions points
+			title_object[x]=title_object[x].replace("!","-") #Putting away ! points
+			title_object[x]=title_object[x].replace("(","_") #Putting away ( The use of () in files names could be a problem
+			title_object[x]=title_object[x].replace(")","_") #Putting away ) The use of () in files names could be a problem
 			objects_names.append(title_object[x])
 			#print title_object[x]
 
@@ -176,46 +180,3 @@ for x in downloads_links:
 
 #subprocess.call('wget -O '+'./jcarolinares/prueba_wget.zip ' +'"http://www.thingiverse.com/thing:15276/zip"' ,shell=True)
 #subprocess.call('echo pru.txt',shell=True)
-'''
-#Puede que se encuentre con archivos no descargables que den error, usar excepciones para continnuar el for
-archivoDescargar = "http://www.thingiverse.com/thing:15276/zip"
-archivoGuardar = "descarga.zip"
-
-now = time.time()
-
-descarga = urllib2.urlopen(archivoDescargar)
-
-ficheroGuardar=file(archivoGuardar,"w")
-ficheroGuardar.write(descarga.read())
-ficheroGuardar.close()
-
-elapsed = time.time() - now
-
-print "Descargado el archivo: %s en %0.3fs" % (archivoDescargar,elapsed)
-
-'''
-
-'''
-<a href="/thing:1375883/zip" class="thing-download-btn thing-option-btn track" data-track-category="[&quot;thing&quot;, &quot;thing&quot;]" data-track-action="[&quot;download&quot;, &quot;download_logged_in&quot;]" data-track-label="[&quot;zip&quot;, &quot;zip&quot;]">Download This Thing!</a>
-
-'''
-
-'''
-import urllib2
-import time
-
-archivoDescargar = "http://www.lawebdelprogramador.com/logolwp100x25.jpg"
-archivoGuardar = "logoLWP.jpg"
-
-now = time.time()
-
-descarga = urllib2.urlopen(archivoDescargar)
-
-ficheroGuardar=file(archivoGuardar,"w")
-ficheroGuardar.write(descarga.read())
-ficheroGuardar.close()
-
-elapsed = time.time() - now
-
-print "Descargado el archivo: %s en %0.3fs" % (archivoDescargar,elapsed)
-'''
