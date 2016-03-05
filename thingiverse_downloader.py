@@ -131,6 +131,11 @@ for page in range(n_likes_pages):
 			title_object[x]=title_object[x].replace("!","-") #Putting away ! points
 			title_object[x]=title_object[x].replace("(","_") #Putting away ( The use of () in files names could be a problem
 			title_object[x]=title_object[x].replace(")","_") #Putting away ) The use of () in files names could be a problem
+			title_object[x]=title_object[x].replace(u"\u2122", '') #Putting away trademark symbol
+			title_object[x]=title_object[x].replace(",","") #Puttin away ,
+			title_object[x]=title_object[x].replace("&","") #Puttin away &
+			title_object[x]=title_object[x].replace("#","") #Puttin away #
+			title_object[x]=title_object[x].replace("?","") #Puttin away ?
 			objects_names.append(title_object[x])
 			#print title_object[x]
 
@@ -168,14 +173,16 @@ for x in objects_names:
 	print x
 
 
-print("DOWNLOADING FILES")
+print("\n----DOWNLOADING FILES----\n")
 subprocess.call('mkdir '+user,shell=True)
 #print and download downloads_links
 i=0
 for x in downloads_links:
 	print(x)
 #	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
-	subprocess.call('wget -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
+	subprocess.call('wget --retry-connrefused -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
+
+	#subprocess.call('wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
 	i=i+1
 
 #subprocess.call('wget -O '+'./jcarolinares/prueba_wget.zip ' +'"http://www.thingiverse.com/thing:15276/zip"' ,shell=True)
