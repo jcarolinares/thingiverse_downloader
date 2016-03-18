@@ -185,5 +185,8 @@ for x in downloads_links:
 	#subprocess.call('wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
 	i=i+1
 
+print("Descarga de archivos terminada")
+subprocess.call('notify-send -t 4500 "thingiverse-downloader: Descarga de archivos terminada"' ,shell=True)
+
 #subprocess.call('wget -O '+'./jcarolinares/prueba_wget.zip ' +'"http://www.thingiverse.com/thing:15276/zip"' ,shell=True)
 #subprocess.call('echo pru.txt',shell=True)
