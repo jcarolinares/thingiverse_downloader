@@ -1,6 +1,6 @@
 # thingiverse_downloader
 
-Python program that, given a user, massive download files from thingiverse_downloader
+Python program that, given a user, massive download files from thingiverse.com
 
 WORK IN PROGRESS
 

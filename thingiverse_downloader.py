@@ -136,6 +136,8 @@ for page in range(n_likes_pages):
 			title_object[x]=title_object[x].replace("&","") #Puttin away &
 			title_object[x]=title_object[x].replace("#","") #Puttin away #
 			title_object[x]=title_object[x].replace("?","") #Puttin away ?
+			title_object[x]=title_object[x].replace("\'","") #Puttin away single quotes
+			title_object[x]=title_object[x].replace("\"","") #Puttin away double quotes
 			objects_names.append(title_object[x])
 			#print title_object[x]
 
@@ -175,15 +177,14 @@ for x in objects_names:
 
 print("\n----DOWNLOADING FILES----\n")
 subprocess.call('mkdir '+user,shell=True)
-#print and download downloads_links
-i=0
-for x in downloads_links:
-	print(x)
-#	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
-	subprocess.call('wget --retry-connrefused -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
 
-	#subprocess.call('wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 -O '+'./'+user+'/'+objects_names[i]+'.zip ' +'"'+x+'"' ,shell=True)
-	i=i+1
+#print and download downloads_links
+for x in range(len(downloads_links)):
+#	print(downloads_links[x])
+#	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
+	subprocess.call('wget --retry-connrefused -O '+'./'+user+'/'+objects_names[x]+'.zip ' +'"'+downloads_links[x]+'"' ,shell=True)
+
+
 
 print("Descarga de archivos terminada")
 subprocess.call('notify-send -t 4500 "thingiverse-downloader: Descarga de archivos terminada"' ,shell=True)
