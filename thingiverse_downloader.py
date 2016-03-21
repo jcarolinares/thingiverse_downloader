@@ -177,6 +177,8 @@ for x in objects_names:
 
 print("\n----DOWNLOADING FILES----\n")
 subprocess.call('mkdir '+user,shell=True)
+likes_user_file=open('./'+user+'/'+user+'_likes.txt','a')#We open or create a file with all the donwload links or the user-Format-title-download url-state /*Donwloaded-Failed*/
+
 
 #print and download downloads_links
 for x in range(len(downloads_links)):
@@ -184,7 +186,12 @@ for x in range(len(downloads_links)):
 #	subprocess.call('wget -O '+'./'+user+'/file'+str(i)+'.zip ' +'"'+x+'"' ,shell=True)
 	subprocess.call('wget --retry-connrefused -O '+'./'+user+'/'+objects_names[x]+'.zip ' +'"'+downloads_links[x]+'"' ,shell=True)
 
-
+	if os.path.exists('./'+user+'/'+objects_names[x]+'.zip'):
+		print("\nEL FICHERO "+objects_names[x]+ " EXISTE!\n\n")
+		likes_user_file.write(objects_names[x]+'-'+downloads_links[x]+'-downloaded\n')
+	else:
+		print("\nFALLO AL DESCARGAR FICHERO "+objects_names[x]+"\n\n")
+		likes_user_file.write(objects_names[x]+'-'+downloads_links[x]+'-failed\n')
 
 print("Descarga de archivos terminada")
 subprocess.call('notify-send -t 4500 "thingiverse-downloader: Descarga de archivos terminada"' ,shell=True)
