@@ -5,7 +5,7 @@ import argparse
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="bc56e9669fca74e63a9de72061b929ca"# This must be inside another file SEE zowi to more info
+api_token="write here your token" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
