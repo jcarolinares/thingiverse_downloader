@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import json
 import sys
 import argparse
+from collections import OrderedDict
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
@@ -9,7 +12,26 @@ api_token="put your api token here" #Go to https://www.thingiverse.com/apps/crea
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
+hall_of_fame=[]
 
+def traffic_lights(n_pages=1):
+    for index in range(n_pages):
+        print("\n\nPage: {}".format(index+1))
+        rest_url=thingiverse_api_base+rest_keywords["search"]+"traffic light"+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        parser_info(rest_url,"traffic_lights.json");
+
+    #Save the data
+    ordered_halloffame=list(OrderedDict.fromkeys(hall_of_fame))
+    ordered_halloffame.sort()
+    file=open("hall_of_fame.list","w")
+    for user in ordered_halloffame:
+        try:
+            file.write(user)
+        except:
+            print("Error in name: {}".format(user))
+            file.write(user)
+            continue
+    file.close()
 
 def newest(n_pages=1):
     for index in range(n_pages):
@@ -30,6 +52,38 @@ def search(keywords,n_pages=1):
         print("\n\nPage: {}".format(index+1))
         rest_url=thingiverse_api_base+rest_keywords["search"]+keywords+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
         download_objects(rest_url,str(keywords+".json"));
+
+def parser_info(rest_url, file_name):
+    s = requests.Session() #It creates a session to speed up the downloads
+    r=s.get(rest_url)
+    data=r.json()
+
+    #Save the data
+    file=open(file_name,"w")
+    file.write(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False).encode('utf8'))
+    file.close()
+
+    #Reading the json file
+    file=open(file_name,"r")
+    data_pd=json.loads(file.read())
+
+    print("Parsing data from {} objects from thingiverse".format(len(data_pd)))
+
+    for object in range(len(data_pd)):
+
+        object_id=str(data_pd[object]["id"])
+        print("\n{} -> {}".format(data_pd[object]["name"].encode('utf-8'),data_pd[object]["public_url"]))
+
+        #Name and last name
+        print("Name: {} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
+
+        #If the name and last name are empty, we use the username
+        if (data_pd[object]["creator"]["first_name"]=="" and data_pd[object]["creator"]["last_name"]==""):
+            hall_of_fame.append(data_pd[object]["creator"]["name"].encode('utf-8')+"\n")
+        else:
+            hall_of_fame.append(data_pd[object]["creator"]["first_name"].encode('utf-8')+" "+data_pd[object]["creator"]["last_name"].encode('utf-8')+"\n")
+
+
 
 def download_objects(rest_url, file_name):
 
@@ -52,14 +106,19 @@ def download_objects(rest_url, file_name):
     for object in range(len(data_pd)):
 
         object_id=str(data_pd[object]["id"])
-        print("\n{} -> {}".format(data_pd[object]["name"],data_pd[object]["public_url"]))
+        print("\n{} -> {}".format(data_pd[object]["name"].encode('utf-8'),data_pd[object]["public_url"]))
         # print("Object id: {}".format(object_id))
 
         #test
-        print("{} {}".format(data_pd[object]["creator"]["name"],data_pd[object]["creator"]["last_name"]))
+        print("{} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
 
+        #If the name and last name are empty, we use the username
+        if (data_pd[object]["creator"]["first_name"]=="" and data_pd[object]["creator"]["last_name"]==""):
+            hall_of_fame.append(data_pd[object]["creator"]["name"].encode('utf-8')+"\n")
+        else:
+            hall_of_fame.append(data_pd[object]["creator"]["first_name"].encode('utf-8')+" "+data_pd[object]["creator"]["last_name"].encode('utf-8')+"\n")
+            # GET /things/{$id}/files/{$file_id}
         #Get file from a things
-        # GET /things/{$id}/files/{$file_id}
         r=s.get(thingiverse_api_base+rest_keywords["things"]+object_id+rest_keywords["files"]+access_keyword+api_token)
         files_info=r.json()
 
@@ -91,6 +150,9 @@ if __name__ == "__main__":
     parser.add_argument("--search", type=str, dest="keywords",
                         help="Downloads the objects that match the keywords. 12 objects per page\n Example: --search 'star wars'")
 
+    parser.add_argument("--traffic_light", type=int, dest="traffic",
+                        help="Check new users that have done a traffic light, adding them to a black list")
+
     args = parser.parse_args()
 
     if args.newest_true:
@@ -99,3 +161,5 @@ if __name__ == "__main__":
         user(args.username,args.pages)
     elif args.keywords:
         search(args.keywords,args.pages)
+    elif args.traffic:
+        traffic_lights(args.traffic)
