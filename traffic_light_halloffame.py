@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="put your api token here" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="put here your token" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
@@ -18,8 +18,12 @@ def traffic_lights(n_pages=1):
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
         rest_url=thingiverse_api_base+rest_keywords["search"]+"traffic light"+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        print(rest_url)
         parser_info(rest_url,"traffic_lights.json");
 
+        save_data()
+
+def save_data():
     #Save the data
     ordered_halloffame=list(OrderedDict.fromkeys(hall_of_fame))
     ordered_halloffame.sort()
@@ -66,6 +70,13 @@ def parser_info(rest_url, file_name):
     #Reading the json file
     file=open(file_name,"r")
     data_pd=json.loads(file.read())
+
+
+    for n in data_pd:
+        if (n=="error"):
+            print("\n\nNo more pages- Finishing the program")
+            save_data()
+            sys.exit()
 
     print("Parsing data from {} objects from thingiverse".format(len(data_pd)))
 
