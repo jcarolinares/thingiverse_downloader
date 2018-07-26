@@ -4,11 +4,12 @@ import requests
 import json
 import sys
 import argparse
+import os.path
 from collections import OrderedDict
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="put here your token" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="bc56e9669fca74e63a9de72061b929ca" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
@@ -22,6 +23,20 @@ def traffic_lights(n_pages=1):
         parser_info(rest_url,"traffic_lights.json");
 
         save_data()
+
+def load_data():
+    #Load the data from the file to a list
+    if os.path.isfile("hall_of_fame.list"):
+        file=open("hall_of_fame.list","r")
+        hall_of_fame = file.readlines()
+        file.close()
+        # Removing \n
+        hall_of_fame = [x.strip() for x in hall_of_fame]
+
+    # for n in hall_of_fame:
+    #     print(n)
+    else:
+        print("Hall of fame file not found")
 
 def save_data():
     #Save the data
@@ -71,7 +86,13 @@ def parser_info(rest_url, file_name):
     file=open(file_name,"r")
     data_pd=json.loads(file.read())
 
+    #The page has objects?
+    if (len(data_pd)==0):
+        print("\n\nNo more pages- Finishing the program")
+        save_data()
+        sys.exit()
 
+    #Is it an error page?
     for n in data_pd:
         if (n=="error"):
             print("\n\nNo more pages- Finishing the program")
@@ -89,6 +110,8 @@ def parser_info(rest_url, file_name):
         print("Name: {} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
 
         #If the name and last name are empty, we use the username
+        #TODO check if the name is already on the list or is new->call the twitter api
+        #3 in [1, 2, 3] # => True
         if (data_pd[object]["creator"]["first_name"]=="" and data_pd[object]["creator"]["last_name"]==""):
             hall_of_fame.append(data_pd[object]["creator"]["name"].encode('utf-8')+"\n")
         else:
@@ -111,6 +134,19 @@ def download_objects(rest_url, file_name):
     #Reading the json file
     file=open(file_name,"r")
     data_pd=json.loads(file.read())
+
+    #The page has objects?
+    if (len(data_pd)==0):
+        print("\n\nNo more pages- Finishing the program")
+        save_data()
+        sys.exit()
+
+    #Is it an error page?
+    for n in data_pd:
+        if (n=="error"):
+            print("\n\nNo more pages- Finishing the program")
+            save_data()
+            sys.exit()
 
     print("Downloading {} objects from thingiverse".format(len(data_pd)))
 
@@ -156,7 +192,10 @@ if __name__ == "__main__":
                         help="Downloads the object of a specified user")
 
     parser.add_argument("--pages", type=int, default=1,
-                        help="Defines the number of pages to be downloaded. 30 objects per page")
+                        help="Defines the number of pages to be downloaded.")
+
+    parser.add_argument("--all", type=bool, default=False,
+                        help="Download all the pages available (MAX 1000).")
 
     parser.add_argument("--search", type=str, dest="keywords",
                         help="Downloads the objects that match the keywords. 12 objects per page\n Example: --search 'star wars'")
@@ -165,6 +204,11 @@ if __name__ == "__main__":
                         help="Check new users that have done a traffic light, adding them to a black list")
 
     args = parser.parse_args()
+
+    load_data()
+
+    if args.all:
+        args.pages=1000
 
     if args.newest_true:
         newest(args.newest_true)
