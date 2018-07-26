@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="bc56e9669fca74e63a9de72061b929ca" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="put your access token here" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
