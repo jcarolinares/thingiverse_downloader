@@ -7,9 +7,13 @@ import argparse
 import os.path
 from collections import OrderedDict
 
+stl_path = "./stls"
+if not os.path.exists(stl_path):
+    os.makedirs(stl_path)
+
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="put your access token here" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="put here your api token" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
@@ -156,7 +160,11 @@ def download_objects(rest_url, file_name):
         print("\n{} -> {}".format(data_pd[object]["name"].encode('utf-8'),data_pd[object]["public_url"]))
         # print("Object id: {}".format(object_id))
 
-        #test
+        file_path = "./stls/"+data_pd[object]["name"].encode('utf-8').replace(" ","_").replace("/","-")
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
+
+        #User name
         print("{} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
 
         #If the name and last name are empty, we use the username
@@ -165,6 +173,7 @@ def download_objects(rest_url, file_name):
         else:
             hall_of_fame.append(data_pd[object]["creator"]["first_name"].encode('utf-8')+" "+data_pd[object]["creator"]["last_name"].encode('utf-8')+"\n")
             # GET /things/{$id}/files/{$file_id}
+
         #Get file from a things
         r=s.get(thingiverse_api_base+rest_keywords["things"]+object_id+rest_keywords["files"]+access_keyword+api_token)
         files_info=r.json()
@@ -175,7 +184,8 @@ def download_objects(rest_url, file_name):
                 #Download the file
                 download_link=files_info[file]["download_url"]+access_keyword+api_token
                 r = s.get(download_link)
-                with open("./stls/"+files_info[file]["name"], "wb") as code:
+
+                with open(file_path+"/"+files_info[file]["name"].encode('utf-8'), "wb") as code:
                     code.write(r.content)
 
 
@@ -218,3 +228,5 @@ if __name__ == "__main__":
         search(args.keywords,args.pages)
     elif args.traffic:
         traffic_lights(args.traffic)
+    else:
+        newest(1)
