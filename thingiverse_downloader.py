@@ -13,7 +13,7 @@ if not os.path.exists(stl_path):
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="put your token code here" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="bc56e9669fca74e63a9de72061b929ca" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","likes":"/likes/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
@@ -172,6 +172,9 @@ def download_objects(rest_url, file_name):
         file_path = "./stls/"+data_pd[object]["name"].encode('utf-8').replace(" ","_").replace("/","-")
         if not os.path.exists(file_path):
             os.makedirs(file_path)
+        else:
+            print("\nSkipping already downloaded object")
+            continue
 
         #User name
         print("{} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
@@ -189,7 +192,7 @@ def download_objects(rest_url, file_name):
 
         for file in range(len(files_info)):
             if(files_info[file]["name"].find(".stl"))!=-1:
-                print(files_info[file]["name"])
+                print("    "+files_info[file]["name"])
                 #Download the file
                 download_link=files_info[file]["download_url"]+access_keyword+api_token
                 r = s.get(download_link)
