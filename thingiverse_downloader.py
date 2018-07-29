@@ -13,7 +13,7 @@ if not os.path.exists(stl_path):
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="bc56e9669fca74e63a9de72061b929ca" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="out here your token key" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","likes":"/likes/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
