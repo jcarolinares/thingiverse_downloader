@@ -13,9 +13,9 @@ if not os.path.exists(stl_path):
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="put here your api token" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="put ypur token code here" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
-rest_keywords={"newest":"/newest","users":"/users/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
+rest_keywords={"newest":"/newest","users":"/users/","likes":"/likes/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
 hall_of_fame=[]
 
@@ -67,7 +67,16 @@ def user(username,n_pages=1):
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
         rest_url=thingiverse_api_base+rest_keywords["users"]+username+rest_keywords["things"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        print(rest_url)
         download_objects(rest_url,str(username+".json"));
+
+def likes(username,n_pages=1):
+    #/users/{$username}/things
+    for index in range(n_pages):
+        print("\n\nPage: {}".format(index+1))
+        rest_url=thingiverse_api_base+rest_keywords["users"]+username+rest_keywords["likes"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        print(rest_url)
+        download_objects(rest_url,str(username+"_likes.json"));
 
 def search(keywords,n_pages=1):
     #GET /search/{$term}/
@@ -207,6 +216,9 @@ if __name__ == "__main__":
     parser.add_argument("--all", type=bool, default=False,
                         help="Download all the pages available (MAX 1000).")
 
+    parser.add_argument("--likes", type=str, dest="likes",
+                        help="Downloads the likes of a specified user")
+
     parser.add_argument("--search", type=str, dest="keywords",
                         help="Downloads the objects that match the keywords. 12 objects per page\n Example: --search 'star wars'")
 
@@ -224,6 +236,8 @@ if __name__ == "__main__":
         newest(args.newest_true)
     elif args.username:
         user(args.username,args.pages)
+    elif args.likes:
+        likes(args.likes,args.pages)
     elif args.keywords:
         search(args.keywords,args.pages)
     elif args.traffic:
