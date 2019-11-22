@@ -13,7 +13,7 @@ if not os.path.exists(stl_path):
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="out here your token key" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="87d6568533140be5b07a867f6437c27e" #Go to https://www.thingiverse.com/apps/create and select Desktop app
 
 rest_keywords={"newest":"/newest","users":"/users/","likes":"/likes/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
 
@@ -191,7 +191,7 @@ def download_objects(rest_url, file_name):
         files_info=r.json()
 
         for file in range(len(files_info)):
-            if(files_info[file]["name"].find(".stl"))!=-1:
+            if( files_info[file]["name"].find(".stl")!=-1 or files_info[file]["name"].find(".STL")!=-1):
                 print("    "+files_info[file]["name"])
                 #Download the file
                 download_link=files_info[file]["download_url"]+access_keyword+api_token
