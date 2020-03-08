@@ -13,11 +13,13 @@ if not os.path.exists(stl_path):
 
 thingiverse_api_base="https://api.thingiverse.com/"
 access_keyword="?access_token="
-api_token="out here your token key" #Go to https://www.thingiverse.com/apps/create and select Desktop app
+api_token="<YOUR_API_TOKEN>" #Go to https://www.thingiverse.com/apps/create and create your own selecting Desktop app
 
-rest_keywords={"newest":"/newest","users":"/users/","likes":"/likes/","things":"/things/","files":"/files","search":"/search/","pages":"&page="}
+rest_keywords={"newest":"newest","users":"users/","likes":"likes/","things":"things/","files":"/files","search":"search/","pages":"&page="}
 
 hall_of_fame=[]
+all_files_flag = False
+
 
 def traffic_lights(n_pages=1):
     for index in range(n_pages):
@@ -60,22 +62,23 @@ def newest(n_pages=1):
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
         rest_url=thingiverse_api_base+rest_keywords["newest"]+access_keyword+api_token+rest_keywords["pages"]+str(n_pages)
+        # print(rest_url)
         download_objects(rest_url,"newest.json");
 
 def user(username,n_pages=1):
     #/users/{$username}/things
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
-        rest_url=thingiverse_api_base+rest_keywords["users"]+username+rest_keywords["things"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
-        print(rest_url)
+        rest_url=thingiverse_api_base+rest_keywords["users"]+username+"/"+rest_keywords["things"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        # print(rest_url)
         download_objects(rest_url,str(username+".json"));
 
 def likes(username,n_pages=1):
     #/users/{$username}/things
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
-        rest_url=thingiverse_api_base+rest_keywords["users"]+username+rest_keywords["likes"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
-        print(rest_url)
+        rest_url=thingiverse_api_base+rest_keywords["users"]+username+"/"+rest_keywords["likes"]+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        # print(rest_url)
         download_objects(rest_url,str(username+"_likes.json"));
 
 def search(keywords,n_pages=1):
@@ -83,6 +86,7 @@ def search(keywords,n_pages=1):
     for index in range(n_pages):
         print("\n\nPage: {}".format(index+1))
         rest_url=thingiverse_api_base+rest_keywords["search"]+keywords+access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        # print(rest_url)
         download_objects(rest_url,str(keywords+".json"));
 
 def parser_info(rest_url, file_name):
@@ -92,7 +96,7 @@ def parser_info(rest_url, file_name):
 
     #Save the data
     file=open(file_name,"w")
-    file.write(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False).encode('utf8'))
+    file.write(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False))
     file.close()
 
     #Reading the json file
@@ -117,18 +121,18 @@ def parser_info(rest_url, file_name):
     for object in range(len(data_pd)):
 
         object_id=str(data_pd[object]["id"])
-        print("\n{} -> {}".format(data_pd[object]["name"].encode('utf-8'),data_pd[object]["public_url"]))
+        print("\n{} -> {}".format(data_pd[object]["name"],data_pd[object]["public_url"]))
 
         #Name and last name
-        print("Name: {} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
+        print("Name: {} {}".format(data_pd[object]["creator"]["first_name"],data_pd[object]["creator"]["last_name"]))
 
         #If the name and last name are empty, we use the username
         #TODO check if the name is already on the list or is new->call the twitter api
         #3 in [1, 2, 3] # => True
         if (data_pd[object]["creator"]["first_name"]=="" and data_pd[object]["creator"]["last_name"]==""):
-            hall_of_fame.append(data_pd[object]["creator"]["name"].encode('utf-8')+"\n")
+            hall_of_fame.append(data_pd[object]["creator"]["name"]+"\n")
         else:
-            hall_of_fame.append(data_pd[object]["creator"]["first_name"].encode('utf-8')+" "+data_pd[object]["creator"]["last_name"].encode('utf-8')+"\n")
+            hall_of_fame.append(data_pd[object]["creator"]["first_name"]+" "+data_pd[object]["creator"]["last_name"]+"\n")
 
 
 
@@ -141,12 +145,16 @@ def download_objects(rest_url, file_name):
 
     #Save the data
     file=open(file_name,"w")
-    file.write(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False).encode('utf8'))
+
+    # print(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False)) # debug print
+    file.write(json.dumps(data, indent=4, sort_keys=True,ensure_ascii=False))
     file.close()
 
     #Reading the json file
     file=open(file_name,"r")
     data_pd=json.loads(file.read())
+
+    data_pd=data
 
     #The page has objects?
     if (len(data_pd)==0):
@@ -166,10 +174,10 @@ def download_objects(rest_url, file_name):
     for object in range(len(data_pd)):
 
         object_id=str(data_pd[object]["id"])
-        print("\n{} -> {}".format(data_pd[object]["name"].encode('utf-8'),data_pd[object]["public_url"]))
-        # print("Object id: {}".format(object_id))
+        print("\n{} -> {}".format(data_pd[object]["name"],data_pd[object]["public_url"]))
+        print("Object id: {}".format(object_id))
 
-        file_path = "./stls/"+data_pd[object]["name"].encode('utf-8').replace(" ","_").replace("/","-")
+        file_path = "./stls/"+data_pd[object]["name"].replace(" ","_").replace("/","-")
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         else:
@@ -177,28 +185,38 @@ def download_objects(rest_url, file_name):
             continue
 
         #User name
-        print("{} {}".format(data_pd[object]["creator"]["first_name"].encode('utf-8'),data_pd[object]["creator"]["last_name"].encode('utf-8')))
+        print("{} {}".format(data_pd[object]["creator"]["first_name"],data_pd[object]["creator"]["last_name"]))
 
         #If the name and last name are empty, we use the username
         if (data_pd[object]["creator"]["first_name"]=="" and data_pd[object]["creator"]["last_name"]==""):
-            hall_of_fame.append(data_pd[object]["creator"]["name"].encode('utf-8')+"\n")
+            hall_of_fame.append(data_pd[object]["creator"]["name"]+"\n")
         else:
-            hall_of_fame.append(data_pd[object]["creator"]["first_name"].encode('utf-8')+" "+data_pd[object]["creator"]["last_name"].encode('utf-8')+"\n")
+            hall_of_fame.append(data_pd[object]["creator"]["first_name"]+" "+data_pd[object]["creator"]["last_name"]+"\n")
             # GET /things/{$id}/files/{$file_id}
 
         #Get file from a things
         r=s.get(thingiverse_api_base+rest_keywords["things"]+object_id+rest_keywords["files"]+access_keyword+api_token)
+        # print(r)
+        # print(thingiverse_api_base+rest_keywords["things"]+object_id+rest_keywords["files"]+access_keyword+api_token)
         files_info=r.json()
 
         for file in range(len(files_info)):
-            if(files_info[file]["name"].find(".stl"))!=-1:
+
+            if (all_files_flag): # Download all the files
                 print("    "+files_info[file]["name"])
                 #Download the file
                 download_link=files_info[file]["download_url"]+access_keyword+api_token
                 r = s.get(download_link)
-
-                with open(file_path+"/"+files_info[file]["name"].encode('utf-8'), "wb") as code:
+                with open(file_path+"/"+files_info[file]["name"], "wb") as code:
                     code.write(r.content)
+            else: # Download only the .stls
+                if(files_info[file]["name"].find(".stl"))!=-1:
+                    print("    "+files_info[file]["name"])
+                    #Download the file
+                    download_link=files_info[file]["download_url"]+access_keyword+api_token
+                    r = s.get(download_link)
+                    with open(file_path+"/"+files_info[file]["name"], "wb") as code:
+                        code.write(r.content)
 
 
 if __name__ == "__main__":
@@ -224,6 +242,9 @@ if __name__ == "__main__":
 
     parser.add_argument("--search", type=str, dest="keywords",
                         help="Downloads the objects that match the keywords. 12 objects per page\n Example: --search 'star wars'")
+    parser.add_argument("--all-files", type=bool, dest="all_files",
+                        help="Download all the files, images, stls and others\n Example: --all-files True")
+
 
     parser.add_argument("--traffic_light", type=int, dest="traffic",
                         help="Check new users that have done a traffic light, adding them to a black list")
@@ -234,6 +255,8 @@ if __name__ == "__main__":
 
     if args.all:
         args.pages=1000
+    if args.all_files:
+        all_files_flag = True
 
     if args.newest_true:
         newest(args.newest_true)
