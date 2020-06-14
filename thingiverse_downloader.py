@@ -24,7 +24,7 @@ if not os.path.exists(stl_path):
 thingiverse_api_base = "https://api.thingiverse.com/"
 access_keyword = "?access_token="
 # Go to https://www.thingiverse.com/apps/create and create your own Desktop app
-api_token = "<YOUR API TOKEN>"
+api_token = "<YOUR_API_TOKEN>"
 
 rest_keywords = {"newest": "newest", "users": "users/", "likes": "likes/",
                  "things": "things/", "files": "/files", "search": "search/", "pages": "&page="}
@@ -185,21 +185,36 @@ def download_objects(rest_url, file_name, mode = "none"):
 
     if mode == "search":
         data_pd = data["hits"]
-    else:
-        data_pd = data
 
-    # The page has objects?
-    if (len(data_pd) == 0):
-        print("\n\nNo more pages- Finishing the program")
-        save_data()
-        sys.exit()
-
-    # Is it an error page?
-    for n in data_pd:
-        if (n == "error"):
+        # The page has objects?
+        if (data_pd is None):
             print("\n\nNo more pages- Finishing the program")
             save_data()
             sys.exit()
+
+        # Is it an error page?
+        for n in data_pd:
+            if (n == "error"):
+                print("\n\nNo more pages- Finishing the program")
+                save_data()
+                sys.exit()
+    else:
+        data_pd = data
+
+        # The page has objects?
+        if (len(data_pd) == 0):
+            print("\n\nNo more pages- Finishing the program")
+            save_data()
+            sys.exit()
+
+        # Is it an error page?
+        for n in data_pd:
+            if (n == "error"):
+                print("\n\nNo more pages- Finishing the program")
+                save_data()
+                sys.exit()
+
+
 
     print("Downloading {} objects from thingiverse".format(len(data_pd)))
     # print(data_pd)
