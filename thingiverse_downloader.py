@@ -56,8 +56,8 @@ def load_data():
 
     # for n in hall_of_fame:
     #     print(n)
-    else:
-        print("Hall of fame file not found")
+    # else:
+    #     print("Hall of fame file not found")
 
 
 def save_data():
@@ -114,7 +114,7 @@ def search(keywords, n_pages=1):
             rest_keywords["search"]+keywords+access_keyword + \
             api_token+rest_keywords["pages"]+str(index+1)
         print(rest_url)
-        download_objects(rest_url, str(keywords+".json"))
+        download_objects(rest_url, str(keywords+".json"), "search")
 
 
 def parser_info(rest_url, file_name):
@@ -165,7 +165,7 @@ def parser_info(rest_url, file_name):
                                 " "+data_pd[object]["creator"]["last_name"]+"\n")
 
 
-def download_objects(rest_url, file_name):
+def download_objects(rest_url, file_name, mode = "none"):
 
     # r = requests.get(rest_url)
     s = requests.Session()  # It creates a session to speed up the downloads
@@ -183,7 +183,10 @@ def download_objects(rest_url, file_name):
     file = open(file_name, "r")
     data_pd = json.loads(file.read())
 
-    data_pd = data["hits"]
+    if mode == "search":
+        data_pd = data["hits"]
+    else:
+        data_pd = data
 
     # The page has objects?
     if (len(data_pd) == 0):
