@@ -2,6 +2,8 @@
 
 A program that massive downloads objects from Thingiverse.com
 
+**Remember to put you thingiverse API TOKEN** inside the variable **api_token**
+
 ## Use
 
 Type in your terminal to know all the options:
@@ -18,11 +20,11 @@ python thingiverse_downloader.py --search "star wars" --pages 3
 
 The optional argument pages set the number of objects to download. In this case, 12 objects per page.
 
-You can also use other arguments like **--user** or **--newest** to dowload objects.
+You can also use other arguments like **--user** or **--newest** to download objects.
 
 ## Where are the objects
 
-All the stls of the objecs are downloaded at the folder **stls**
+All the stls of the objects are downloaded at the folder **stls**. In case you use the option **--zip**, you will find the zip files inside the folder **zip_files** 
 
 Enjoy!
 

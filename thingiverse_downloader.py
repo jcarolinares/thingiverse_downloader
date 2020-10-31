@@ -18,20 +18,25 @@ import os.path
 from collections import OrderedDict
 
 stl_path = "./stls"
-if not os.path.exists(stl_path):
-    os.makedirs(stl_path)
 
 thingiverse_api_base = "https://api.thingiverse.com/"
 access_keyword = "?access_token="
 # Go to https://www.thingiverse.com/apps/create and create your own Desktop app
-api_token = "<YOUR_API_TOKEN>"
+api_token = "<API TOKEN>"
 
 rest_keywords = {"newest": "newest", "users": "users/", "likes": "likes/",
-                 "things": "things/", "files": "/files", "search": "search/", "pages": "&page="}
+                 "things": "things/", "files": "/files", "search": "search/", "zip": "/package-url", "pages": "&page="}
 
 hall_of_fame = []
 all_files_flag = False
+zip_files_flag = False
 
+if not os.path.exists("./zip_files"):
+    os.makedirs("./zip_files/")
+    print("zip_files folder created")
+if not os.path.exists(stl_path):
+    os.makedirs(stl_path)
+    print("stls folder created")
 
 def traffic_lights(n_pages=1):
     for index in range(n_pages):
@@ -227,7 +232,11 @@ def download_objects(rest_url, file_name, mode = "none"):
         print("Object id: {}".format(object_id))
 
         file_path = "./stls/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-")
-        if not os.path.exists(file_path):
+        file_path_zip = "./zip_files/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-")+".zip"
+ 
+        if zip_files_flag:
+            print("\nZIP file request")
+        elif not os.path.exists(file_path):
             os.makedirs(file_path)
         else:
             print("\nSkipping already downloaded object")
@@ -248,27 +257,43 @@ def download_objects(rest_url, file_name, mode = "none"):
         # Get file from a things
         r = s.get(thingiverse_api_base+rest_keywords["things"] +
                   object_id+rest_keywords["files"]+access_keyword+api_token)
+        s_things = s.get(thingiverse_api_base+rest_keywords["things"] +
+                  object_id+rest_keywords["zip"]+access_keyword+api_token)
+        
+        url_things = s_things.json()
+        
+        # print(url_things)
         # print(r)
         # print(thingiverse_api_base+rest_keywords["things"]+object_id+rest_keywords["files"]+access_keyword+api_token)
         files_info = r.json()
 
-        for file in range(len(files_info)):
+        if (zip_files_flag): # Download Thingiverse ZIP files
+            print("    "+data_pd[object]["name"])
+            print("Downloading ZIP file")
+            # Download the file
+            download_link = url_things["public_url"]
+            # print(download_link)
+            r = s.get(download_link)
+            with open(file_path_zip, "wb") as code:
+                code.write(r.content)
+        else:
+            for file in range(len(files_info)):
 
-            if (all_files_flag):  # Download all the files
-                print("    "+files_info[file]["name"])
-                # Download the file
-                download_link = files_info[file]["download_url"]+access_keyword+api_token
-                r = s.get(download_link)
-                with open(file_path+"/"+files_info[file]["name"], "wb") as code:
-                    code.write(r.content)
-            else:  # Download only the .stls
-                if(files_info[file]["name"].find(".stl")) != -1:
+                if (all_files_flag):  # Download all the files
                     print("    "+files_info[file]["name"])
                     # Download the file
                     download_link = files_info[file]["download_url"]+access_keyword+api_token
                     r = s.get(download_link)
                     with open(file_path+"/"+files_info[file]["name"], "wb") as code:
                         code.write(r.content)
+                else:  # Download only the .stls
+                    if(files_info[file]["name"].find(".stl")) != -1:
+                        print("    "+files_info[file]["name"])
+                        # Download the file
+                        download_link = files_info[file]["download_url"]+access_keyword+api_token
+                        r = s.get(download_link)
+                        with open(file_path+"/"+files_info[file]["name"], "wb") as code:
+                            code.write(r.content)
 
 
 if __name__ == "__main__":
@@ -300,6 +325,9 @@ if __name__ == "__main__":
     parser.add_argument("--traffic_light", type=int, dest="traffic",
                         help="Check new users that have done a traffic light, adding them to a black list")
 
+    parser.add_argument("--zip", type=bool, default=False,
+                        help="Download the complete ZIP file version-Including Thingiverse licenses")
+
     args = parser.parse_args()
 
     load_data()
@@ -308,6 +336,8 @@ if __name__ == "__main__":
         args.pages = 1000
     if args.all_files:
         all_files_flag = True
+    elif args.zip:
+        zip_files_flag = True
 
     if args.newest_true:
         newest(args.newest_true)
