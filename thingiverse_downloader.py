@@ -25,7 +25,9 @@ access_keyword = "?access_token="
 api_token = "<API TOKEN>"
 
 rest_keywords = {"newest": "newest", "users": "users/", "likes": "likes/",
-                 "things": "things/", "files": "/files", "search": "search/", "zip": "/package-url", "pages": "&page="}
+                 "things": "things/", "files": "/files", "search": "search/",
+                 "zip": "/package-url", "pages": "&page=",
+                 "collections": "collections/"}
 
 hall_of_fame = []
 all_files_flag = False
@@ -98,6 +100,16 @@ def user(username, n_pages=1):
             access_keyword+api_token+rest_keywords["pages"]+str(index+1)
         print(rest_url)
         download_objects(rest_url, str(username+".json"))
+
+def collection(id, n_pages=1):
+    # /collections/{$id}/things
+    for index in range(n_pages):
+        print("\n\nPage: {}".format(index+1))
+        rest_url = thingiverse_api_base + \
+            rest_keywords["collections"]+id+"/"+rest_keywords["things"] + \
+            access_keyword+api_token+rest_keywords["pages"]+str(index+1)
+        print(rest_url)
+        download_objects(rest_url, str(id+".json"))
 
 
 def likes(username, n_pages=1):
@@ -308,6 +320,9 @@ if __name__ == "__main__":
     parser.add_argument("--user", type=str, dest="username",
                         help="Downloads the object of a specified user")
 
+    parser.add_argument("--collection", type=str, dest="collection",
+                        help="Downloads the collection with the specified id")
+
     parser.add_argument("--pages", type=int, default=1,
                         help="Defines the number of pages to be downloaded.")
 
@@ -349,5 +364,7 @@ if __name__ == "__main__":
         search(args.keywords, args.pages)
     elif args.traffic:
         traffic_lights(args.traffic)
+    elif args.collection:
+        collection(args.collection, args.pages)
     else:
         newest(1)
