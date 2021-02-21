@@ -2,7 +2,7 @@
 
 A program that massive downloads objects from Thingiverse.com
 
-**Remember to put you thingiverse API TOKEN** inside the variable **api_token**
+**Remember to put you thingiverse API TOKEN** inside the file **api_credentials.ini**
 
 ## Use
 

@@ -16,13 +16,24 @@ import sys
 import argparse
 import os.path
 from collections import OrderedDict
+import configparser
 
 stl_path = "./stls"
 
 thingiverse_api_base = "https://api.thingiverse.com/"
 access_keyword = "?access_token="
 # Go to https://www.thingiverse.com/apps/create and create your own Desktop app
-api_token = "<API TOKEN>"
+
+
+config_file = "api_credentials.ini"
+config = configparser.ConfigParser()
+config.read(config_file)
+
+if (config.get("ThingiverseAPI", "api_token") == "<THINGIVERSE_API_TOKEN>"):
+    print("ERROR-YOU HAVE TO PUT YOUR THINGIVERSE API TOKEN AT: api_credentials.ini")
+    sys.exit()
+else:
+    api_token = config.get("ThingiverseAPI", "api_token")
 
 rest_keywords = {"newest": "newest", "users": "users/", "likes": "likes/",
                  "things": "things/", "files": "/files", "search": "search/",
@@ -243,8 +254,8 @@ def download_objects(rest_url, file_name, mode = "none"):
         print("\n{} -> {}".format(data_pd[object]["name"], data_pd[object]["public_url"]))
         print("Object id: {}".format(object_id))
 
-        file_path = "./stls/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-")
-        file_path_zip = "./zip_files/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-")+".zip"
+        file_path = "./stls/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-").replace(":", "-")
+        file_path_zip = "./zip_files/"+data_pd[object]["name"].replace(" ", "_").replace("/", "-").replace(":", "-")+".zip"
  
         if zip_files_flag:
             print("\nZIP file request")
